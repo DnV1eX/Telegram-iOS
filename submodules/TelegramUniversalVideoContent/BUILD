@@ -25,6 +25,7 @@ swift_library(
         "//submodules/Utils/RangeSet:RangeSet",
         "//submodules/TelegramVoip",
         "//submodules/ManagedFile",
+        "//third-party/HLSPlayer",
     ],
     visibility = [
         "//visibility:public",
