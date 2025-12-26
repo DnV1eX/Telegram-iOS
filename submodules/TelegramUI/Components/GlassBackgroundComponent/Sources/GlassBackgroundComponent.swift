@@ -6,6 +6,7 @@ import ComponentDisplayAdapters
 import UIKitRuntimeUtils
 import CoreImage
 import AppBundle
+import LiquidGlassKit
 
 private final class ContentContainer: UIView {
     private let maskContentView: UIView
@@ -303,7 +304,7 @@ public class GlassBackgroundView: UIView {
     
     private let backgroundNode: NavigationBackgroundNode?
     
-    private let nativeView: UIVisualEffectView?
+    private let nativeView: AnyVisualEffectView?
     private let nativeViewClippingContext: ClippingShapeContext?
     private let nativeParamsView: EffectSettingsContainerView?
     
@@ -329,12 +330,12 @@ public class GlassBackgroundView: UIView {
     public static var useCustomGlassImpl: Bool = false
     
     public override init(frame: CGRect) {
-        if #available(iOS 26.0, *), !GlassBackgroundView.useCustomGlassImpl {
+//        if #available(iOS 26.0, *), !GlassBackgroundView.useCustomGlassImpl {
             self.backgroundNode = nil
             
-            let glassEffect = UIGlassEffect(style: .regular)
+            let glassEffect = LiquidGlassEffect(style: .regular, isNative: !GlassBackgroundView.useCustomGlassImpl)//UIGlassEffect(style: .regular)
             glassEffect.isInteractive = false
-            let nativeView = UIVisualEffectView(effect: glassEffect)
+            let nativeView = VisualEffectView(effect: glassEffect)
             self.nativeViewClippingContext = ClippingShapeContext(view: nativeView)
             self.nativeView = nativeView
             
@@ -345,16 +346,16 @@ public class GlassBackgroundView: UIView {
             
             self.foregroundView = nil
             self.shadowView = nil
-        } else {
-            let backgroundNode = NavigationBackgroundNode(color: .black, enableBlur: true, customBlurRadius: 8.0)
-            self.backgroundNode = backgroundNode
-            self.nativeView = nil
-            self.nativeViewClippingContext = nil
-            self.nativeParamsView = nil
-            self.foregroundView = UIImageView()
-            
-            self.shadowView = UIImageView()
-        }
+//        } else {
+//            let backgroundNode = NavigationBackgroundNode(color: .black, enableBlur: true, customBlurRadius: 8.0)
+//            self.backgroundNode = backgroundNode
+//            self.nativeView = nil
+//            self.nativeViewClippingContext = nil
+//            self.nativeParamsView = nil
+//            self.foregroundView = UIImageView()
+//            
+//            self.shadowView = UIImageView()
+//        }
         
         self.maskContainerView = UIView()
         self.maskContainerView.backgroundColor = .white
@@ -497,8 +498,8 @@ public class GlassBackgroundView: UIView {
                 foregroundView.image = GlassBackgroundView.generateLegacyGlassImage(size: CGSize(width: outerCornerRadius * 2.0, height: outerCornerRadius * 2.0), inset: shadowInset, isDark: isDark, fillColor: tintColor.color)
             } else {
                 if let nativeParamsView = self.nativeParamsView, let nativeView = self.nativeView {
-                    if #available(iOS 26.0, *) {
-                        let glassEffect = UIGlassEffect(style: .regular)
+//                    if #available(iOS 26.0, *) {
+                        let glassEffect = LiquidGlassEffect(style: .regular)//UIGlassEffect(style: .regular)
                         switch tintColor.kind {
                         case .panel:
                             glassEffect.tintColor = UIColor(white: isDark ? 0.0 : 1.0, alpha: 0.1)
@@ -522,7 +523,7 @@ public class GlassBackgroundView: UIView {
                             nativeParamsView.lumaMin = 0.6
                             nativeParamsView.lumaMax = 0.61
                         }
-                    }
+//                    }
                 }
             }
         }
@@ -545,8 +546,8 @@ public final class GlassBackgroundContainerView: UIView {
     
     private let legacyView: ContentView?
     private let nativeParamsView: EffectSettingsContainerView?
-    private let nativeView: UIVisualEffectView?
-    
+    private let nativeView: AnyVisualEffectView?
+
     public var contentView: UIView {
         if let nativeView = self.nativeView {
             return nativeView.contentView
@@ -556,10 +557,10 @@ public final class GlassBackgroundContainerView: UIView {
     }
     
     public override init(frame: CGRect) {
-        if #available(iOS 26.0, *) {
-            let effect = UIGlassContainerEffect()
+//        if #available(iOS 26.0, *) {
+            let effect = LiquidGlassContainerEffect()//UIGlassContainerEffect()
             effect.spacing = 7.0
-            let nativeView = UIVisualEffectView(effect: effect)
+            let nativeView = VisualEffectView(effect: effect)
             self.nativeView = nativeView
             
             let nativeParamsView = EffectSettingsContainerView(frame: CGRect())
@@ -567,11 +568,11 @@ public final class GlassBackgroundContainerView: UIView {
             nativeParamsView.addSubview(nativeView)
             
             self.legacyView = nil
-        } else {
-            self.nativeView = nil
-            self.nativeParamsView = nil
-            self.legacyView = ContentView()
-        }
+//        } else {
+//            self.nativeView = nil
+//            self.nativeParamsView = nil
+//            self.legacyView = ContentView()
+//        }
         
         super.init(frame: frame)
         

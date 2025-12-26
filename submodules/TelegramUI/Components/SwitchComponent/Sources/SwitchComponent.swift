@@ -4,6 +4,7 @@ import Display
 import AsyncDisplayKit
 import ComponentFlow
 import TelegramPresentationData
+import LiquidGlassKit
 
 public final class SwitchComponent: Component {
     public typealias EnvironmentType = Empty
@@ -33,13 +34,13 @@ public final class SwitchComponent: Component {
     }
     
     public final class View: UIView {
-        private let switchView: UISwitch
-    
+        private let switchView: AnySwitch
+
         private var component: SwitchComponent?
         
         override init(frame: CGRect) {
-            self.switchView = UISwitch()
-            
+            self.switchView = LiquidGlassSwitch.make()
+
             super.init(frame: frame)
             
             self.addSubview(self.switchView)

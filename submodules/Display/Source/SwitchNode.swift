@@ -1,21 +1,22 @@
 import Foundation
 import UIKit
 import AsyncDisplayKit
+import LiquidGlassKit
 
-private final class SwitchNodeViewLayer: CALayer {
-    override func setNeedsDisplay() {
-    }
-}
+//private final class SwitchNodeViewLayer: CALayer {
+//    override func setNeedsDisplay() {
+//    }
+//}
 
-private final class SwitchNodeView: UISwitch {
-    override class var layerClass: AnyClass {
-        if #available(iOS 26.0, *) {
-            return super.layerClass
-        } else {
-            return SwitchNodeViewLayer.self
-        }
-    }
-}
+//private final class SwitchNodeView: UISwitch {
+//    override class var layerClass: AnyClass {
+//        if #available(iOS 26.0, *) {
+//            return super.layerClass
+//        } else {
+//            return SwitchNodeViewLayer.self
+//        }
+//    }
+//}
 
 open class SwitchNode: ASDisplayNode {
     public var valueUpdated: ((Bool) -> Void)?
@@ -24,7 +25,7 @@ open class SwitchNode: ASDisplayNode {
         didSet {
             if self.isNodeLoaded {
                 if oldValue != self.frameColor {
-                    (self.view as! UISwitch).tintColor = self.frameColor
+                    (self.view as! AnySwitch).tintColor = self.frameColor
                 }
             }
         }
@@ -32,7 +33,7 @@ open class SwitchNode: ASDisplayNode {
     public var handleColor = UIColor(rgb: 0xffffff) {
         didSet {
             if self.isNodeLoaded {
-                //(self.view as! UISwitch).thumbTintColor = self.handleColor
+                //(self.view as! AnySwitch).thumbTintColor = self.handleColor
             }
         }
     }
@@ -40,7 +41,7 @@ open class SwitchNode: ASDisplayNode {
         didSet {
             if self.isNodeLoaded {
                 if oldValue != self.contentColor {
-                    (self.view as! UISwitch).onTintColor = self.contentColor
+                    (self.view as! AnySwitch).onTintColor = self.contentColor
                 }
             }
         }
@@ -54,7 +55,7 @@ open class SwitchNode: ASDisplayNode {
             if (value != self._isOn) {
                 self._isOn = value
                 if self.isNodeLoaded {
-                    (self.view as! UISwitch).setOn(value, animated: false)
+                    (self.view as! AnySwitch).setOn(value, animated: false)
                 }
             }
         }
@@ -64,7 +65,7 @@ open class SwitchNode: ASDisplayNode {
         super.init()
         
         self.setViewBlock({
-            return SwitchNodeView()
+            return LiquidGlassSwitch.make()
         })
     }
     
@@ -73,19 +74,19 @@ open class SwitchNode: ASDisplayNode {
         
         self.view.isAccessibilityElement = false
         
-        (self.view as! UISwitch).backgroundColor = self.backgroundColor
-        (self.view as! UISwitch).tintColor = self.frameColor
-        (self.view as! UISwitch).onTintColor = self.contentColor
+        (self.view as! AnySwitch).backgroundColor = self.backgroundColor
+        (self.view as! AnySwitch).tintColor = self.frameColor
+        (self.view as! AnySwitch).onTintColor = self.contentColor
         
-        (self.view as! UISwitch).setOn(self._isOn, animated: false)
+        (self.view as! AnySwitch).setOn(self._isOn, animated: false)
         
-        (self.view as! UISwitch).addTarget(self, action: #selector(switchValueChanged(_:)), for: .valueChanged)
+        (self.view as! UIControl).addTarget(self, action: #selector(switchValueChanged(_:)), for: .valueChanged)
     }
     
     public func setOn(_ value: Bool, animated: Bool) {
         self._isOn = value
         if self.isNodeLoaded {
-            (self.view as! UISwitch).setOn(value, animated: animated)
+            (self.view as! AnySwitch).setOn(value, animated: animated)
         }
     }
     
@@ -97,8 +98,8 @@ open class SwitchNode: ASDisplayNode {
         }
     }
     
-    @objc func switchValueChanged(_ view: UISwitch) {
-        self._isOn = view.isOn
-        self.valueUpdated?(view.isOn)
+    @objc func switchValueChanged(_ view: UIControl) {
+        self._isOn = (view as! AnySwitch).isOn
+        self.valueUpdated?((view as! AnySwitch).isOn)
     }
 }

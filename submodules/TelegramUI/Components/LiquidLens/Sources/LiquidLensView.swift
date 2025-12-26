@@ -3,6 +3,7 @@ import UIKit
 import Display
 import ComponentFlow
 import GlassBackgroundComponent
+import LiquidGlassKit
 
 private final class RestingBackgroundView: UIVisualEffectView {
     var isDark: Bool?
@@ -147,8 +148,10 @@ public final class LiquidLensView: UIView {
                 let instance = objcAlloc.perform(initSelector, with: UIView()).takeUnretainedValue()
                 self.lensView = instance as? UIView
             }
+        } else {
+            self.lensView = LiquidLensView()
         }
-        
+
         if let lensView = self.lensView {
             self.backgroundContainer.layer.zPosition = 1
             lensView.layer.zPosition = 10.0
